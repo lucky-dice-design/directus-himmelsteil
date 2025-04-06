@@ -22,6 +22,8 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          echo "🔑 SSH private key starts with:"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -c 50
           whoami
           hostname -I
           cd /var/www/vhosts/himmelsteil.com/directus.himmelsteil.com
