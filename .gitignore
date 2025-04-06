@@ -1,0 +1,4 @@
+.env
+postgres-directus-data/
+node_modules/
+dist/
