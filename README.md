@@ -2,5 +2,5 @@
 
 Docker based dirctus project for himmelsteil.com
 
-To run local run docker `compose up -d`  
+To run local run `docker compose up -d`  
 
