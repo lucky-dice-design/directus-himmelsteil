@@ -19,7 +19,7 @@ jobs:
         debug: true
 
         host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
+        username: "himmelsteil.com_ze6d8apbrjp"
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           echo "🔑 SSH private key starts with:"
