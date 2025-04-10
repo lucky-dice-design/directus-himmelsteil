@@ -38,6 +38,5 @@ jobs:
         if [ ! -z "$CONTAINER_ID" ]; then
         docker stop $CONTAINER_ID
         docker rm $CONTAINER_ID
-        else
         fi
         docker-compose up -d
