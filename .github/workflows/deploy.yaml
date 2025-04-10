@@ -7,21 +7,30 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Deploy to Server via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        debug: true
+    # 1. SSH Key hinterlegen
+    - name: Add SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/github-deploy-directus
+        chmod 600 ~/.ssh/github-deploy-directus
+        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      shell: bash
 
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /var/www/vhosts/himmelsteil.com/directus.himmelsteil.com
-          git pull
-          docker compose up -d
+    # 2. Deploy Files via SCP
+    - name: Deploy to Server via SCP
+      run: |
+        scp -r -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no ./public/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/vhosts/himmelsteil.com/httpdocs/
+
+    # 3. (Optional) Remote Commands ausführen
+    - name: Execute Remote Commands
+      run: |
+        ssh -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          cd /var/www/vhosts/himmelsteil.com/httpdocs/
+          docker-compose up -d
+        EOF
