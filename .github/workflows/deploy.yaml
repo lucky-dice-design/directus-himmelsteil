@@ -28,9 +28,11 @@ jobs:
         rsync -avz -e "ssh -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no" ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/vhosts/himmelsteil.com/directus.himmelsteil.com/
 
     # Docker Compose auf dem Server ausführen
-    - name: Execute Docker Compose
+    - name: Deploy to Server via SSH
       run: |
         ssh -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-          cd /var/www/vhosts/himmelsteil.com/directus.himmelsteil.com/
-          docker compose up -d --force-recreate
+        cd /var/www/vhosts/himmelsteil.com/directus.himmelsteil.com
+        docker compose down || true
+        git pull
+        docker compose up -d --force-recreate
         EOF
