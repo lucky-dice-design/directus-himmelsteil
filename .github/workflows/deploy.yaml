@@ -32,7 +32,12 @@ jobs:
       run: |
         ssh -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
         cd /var/www/vhosts/himmelsteil.com/directus.himmelsteil.com
-        docker compose down || true
-        git pull
-        docker compose up -d --force-recreate
-        EOF
+        docker-compose down
+        sleep 5
+        CONTAINER_ID=$(docker ps --filter "publish=8055" -q)
+        if [ ! -z "$CONTAINER_ID" ]; then
+        docker stop $CONTAINER_ID
+        docker rm $CONTAINER_ID
+        else
+        fi
+        docker-compose up -d
