@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 1. SSH Key hinterlegen
+    # SSH Key für Login auf den Server hinzufügen
     - name: Add SSH Key
       run: |
         mkdir -p ~/.ssh
@@ -22,15 +22,15 @@ jobs:
         ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
       shell: bash
 
-    # 2. Deploy Files via SCP
-    - name: Deploy to Server via SCP
+    # Push dein komplettes Repository auf den Server
+    - name: Deploy Project to Server
       run: |
-        scp -r -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no ./public/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/vhosts/himmelsteil.com/httpdocs/
+        rsync -avz -e "ssh -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no" ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/vhosts/himmelsteil.com/directus.himmelsteil.com/
 
-    # 3. (Optional) Remote Commands ausführen
-    - name: Execute Remote Commands
+    # Docker Compose auf dem Server ausführen
+    - name: Execute Docker Compose
       run: |
         ssh -i ~/.ssh/github-deploy-directus -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-          cd /var/www/vhosts/himmelsteil.com/httpdocs/
+          cd /var/www/vhosts/himmelsteil.com/directus.himmelsteil.com/
           docker-compose up -d
         EOF
