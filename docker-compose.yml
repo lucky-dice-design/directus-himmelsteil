@@ -38,6 +38,7 @@ services:
       - directus-network
 
 networks:
+  web:
   directus-network:
 
 volumes:
