@@ -2,7 +2,7 @@ services:
   directus:
     image: directus/directus
     ports:
-      - "8055:8055"
+      - "127.0.0.1:8055:8055"
     environment:
       KEY: ${DIRECTUS_KEY}
       SECRET: ${DIRECTUS_SECRET}
